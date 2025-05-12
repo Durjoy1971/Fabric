@@ -17,6 +17,15 @@ const EditorCanvas = forwardRef(({ canvas, setCurrentFilter }, ref) => {
             'selection:cleared': handleSelection
         });
 
+        function handleObjectMoving(e) {
+            const obj = e.target;
+            if (obj) {
+                const { left: px, top: py } = obj._originalLeftTop || { left: obj.left, top: obj.top };
+                const { left: cx, top: cy } = obj;
+                console.log(`Moved from (${px}, ${py}) to (${cx}, ${cy})`);
+                obj._originalLeftTop = { left: cx, top: cy }; // Update the original position
+            }
+        }
 
         function handleKeyDown(e) {
             if (e.key === 'Delete') {
@@ -56,7 +65,8 @@ const EditorCanvas = forwardRef(({ canvas, setCurrentFilter }, ref) => {
             canvas.off({
                 'selection:created': handleSelection,
                 'selection:updated': handleSelection,
-                'selection:cleared': handleSelection
+                'selection:cleared': handleSelection,
+                'object:moving': handleObjectMoving
             });
         };
 

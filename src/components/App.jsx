@@ -28,7 +28,6 @@ function App() {
   }, [canvasRef, setCanvas]);
 
   useEffect(() => {
-    console.log(canvas);
     if (
       !canvas ||
       !canvas.getActiveObject() ||
