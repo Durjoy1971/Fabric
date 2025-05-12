@@ -1,23 +1,25 @@
-import './App.css';
-import EditorCanvas from './EditorCanvas';
-import Toolbox from './Toolbox';
-import { useRef, useEffect, useState } from 'react';
-import { Canvas, PencilBrush, filters } from 'fabric';
+import "./App.css";
+import EditorCanvas from "./EditorCanvas";
+import Toolbox from "./Toolbox";
+import { useRef, useEffect, useState } from "react";
+import { Canvas, PencilBrush, filters } from "fabric";
 
 function App() {
   const canvasRef = useRef(null);
   const [canvas, setCanvas] = useState(null);
   const [currentFilter, setCurrentFilter] = useState(null);
 
-
   useEffect(() => {
-    const canvas = new Canvas(canvasRef.current, { backgroundColor: 'white' });
-    canvas.setDimensions({ width: window.innerWidth, height: window.innerHeight * 0.9 });
+    const canvas = new Canvas(canvasRef.current, { backgroundColor: "white" });
+    canvas.setDimensions({
+      width: window.innerWidth * 0.98,
+      height: window.innerHeight * 0.91,
+    });
 
     // Add the brush configuration here
     const brush = new PencilBrush(canvas);
-    brush.color = 'black';
-    brush.width = 5;
+    brush.color = "blue";
+    brush.width = 3;
     canvas.freeDrawingBrush = brush;
 
     setCanvas(canvas);
@@ -26,29 +28,33 @@ function App() {
   }, [canvasRef, setCanvas]);
 
   useEffect(() => {
-    if (!canvas ||
+    console.log(canvas);
+    if (
+      !canvas ||
       !canvas.getActiveObject() ||
-      !canvas.getActiveObject().isType('image')) return;
+      !canvas.getActiveObject().isType("image")
+    )
+      return;
 
     function getSelectedFilter() {
       switch (currentFilter) {
-        case 'sepia':
+        case "sepia":
           return new filters.Sepia();
-        case 'vintage':
+        case "vintage":
           return new filters.Vintage();
-        case 'invert':
+        case "invert":
           return new filters.Invert();
-        case 'polaroid':
+        case "polaroid":
           return new filters.Polaroid();
-        case 'grayscale':
+        case "grayscale":
           return new filters.Grayscale();
-        case 'blackwhite':
+        case "blackwhite":
           return new filters.BlackWhite();
-        case 'brownie':
+        case "brownie":
           return new filters.Brownie();
-        case 'kodachrome':
+        case "kodachrome":
           return new filters.Kodachrome();
-        case 'technicolor':
+        case "technicolor":
           return new filters.Technicolor();
         default:
           return null;

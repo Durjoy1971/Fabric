@@ -5,8 +5,6 @@ const EditorCanvas = forwardRef(({ canvas, setCurrentFilter }, ref) => {
     useEffect(() => {
         if (!canvas) return;
 
-        let clipboard = null; // To store the copied object(s)
-
         function handleSelection(e) {
             const obj = e.selected?.length === 1 ? e.selected[0] : null;
             const filter = obj?.filters?.at(0);
@@ -19,9 +17,10 @@ const EditorCanvas = forwardRef(({ canvas, setCurrentFilter }, ref) => {
             'selection:cleared': handleSelection
         });
 
+
         function handleKeyDown(e) {
             if (e.key === 'Delete') {
-                for (const obj of canvas.getActiveObjects()) {
+                for (const obj of canvas.getActiveObjects()) {                    
                     canvas.remove(obj);
                     canvas.discardActiveObject();
                 }
