@@ -5,6 +5,9 @@ const EditorCanvas = forwardRef(({ canvas, setCurrentFilter }, ref) => {
     useEffect(() => {
         if (!canvas) return;
 
+        let isDrawing = false;
+        let startPoint = null;
+
         function handleSelection(e) {
             const obj = e.selected?.length === 1 ? e.selected[0] : null;
             const filter = obj?.filters?.at(0);
@@ -23,9 +26,40 @@ const EditorCanvas = forwardRef(({ canvas, setCurrentFilter }, ref) => {
                 const { left: px, top: py } = obj._originalLeftTop || { left: obj.left, top: obj.top };
                 const { left: cx, top: cy } = obj;
                 console.log(`Moved from (${px}, ${py}) to (${cx}, ${cy})`);
+                console.log(`Movement difference - X: ${(cx - px).toFixed(2)}, Y: ${(cy - py).toFixed(2)}`);
                 obj._originalLeftTop = { left: cx, top: cy }; // Update the original position
             }
         }
+
+        canvas.on('object:moving', handleObjectMoving);
+
+        // Handle drawing mode events
+        function handleMouseDown(e) {
+            if (!canvas.isDrawingMode) return;
+            isDrawing = true;
+            startPoint = canvas.getPointer(e.e);
+            console.log(`Drawing started at (${startPoint.x}, ${startPoint.y})`);            
+        }
+
+        function handleMouseMove(e) {
+            if (isDrawing && canvas.isDrawingMode) {
+                const currentPoint = canvas.getPointer(e.e);
+                console.log(`Drawing from (${startPoint.x}, ${startPoint.y}) to (${currentPoint.x}, ${currentPoint.y})`);
+            }
+        }
+
+        function handleMouseUp(e) {
+            if (isDrawing && canvas.isDrawingMode) {
+                const endPoint = canvas.getPointer(e.e);
+                console.log(`Drawing ended at (${endPoint.x}, ${endPoint.y})`);
+                isDrawing = false;
+                startPoint = null;
+            }
+        }
+
+        canvas.on('mouse:down', handleMouseDown);
+        canvas.on('mouse:move', handleMouseMove);
+        canvas.on('mouse:up', handleMouseUp);
 
         function handleKeyDown(e) {
             if (e.key === 'Delete') {
@@ -66,7 +100,10 @@ const EditorCanvas = forwardRef(({ canvas, setCurrentFilter }, ref) => {
                 'selection:created': handleSelection,
                 'selection:updated': handleSelection,
                 'selection:cleared': handleSelection,
-                'object:moving': handleObjectMoving
+                'object:moving': handleObjectMoving,
+                'mouse:down': handleMouseDown,
+                'mouse:move': handleMouseMove,
+                'mouse:up': handleMouseUp
             });
         };
 
